@@ -1,0 +1,35 @@
+{
+  "plugin_type": "widget",
+  "name": "utag element change",
+  "edit_page_url": "atticandbutton.us",
+  "form_schema": [
+    {
+      "default_value": ".content-area__title",
+      "field_type": "selector",
+      "name": "selector",
+      "label": "selector",
+      "options": null
+    },
+    {
+      "default_value": "country_code,tealium_account",
+      "field_type": "text",
+      "name": "data",
+      "label": "data",
+      "options": null
+    },
+    {
+      "default_value": "I am from utag and I have a utag level account with tealium",
+      "field_type": "multi_text",
+      "name": "text",
+      "label": "text",
+      "options": null
+    }
+  ],
+  "description": "This extension will allow you to replace text on the page with text that is dynamically pulling in utag data layer values.\n\nFor fields:\n\nselector: Use the visual editor to select the parent element of the text you want to replace/edit\n\ndata: Put in the keys that you want to get data from in the utag object in the order that they will be in the text separated by commas with no spaces\n\ntext: place the text you would like to replace the existing text with in this field and type utag where you want the value to be dynamic\n\nYou can see an example of this through the default values of the fields in the extension",
+  "options": {
+    "apply_js": "var utils = optimizely.get('utils');\n\n\nutils.waitForElement(extension.selector)\n  .then(function(elem) {\n    // Prepend the extension html to the body\n  \tvar arr = extension.data.split(\",\");\n    \t\n  \tvar update = extension.text;\n  \t\n  \tfunction operation(){\n      console.log(update);\n      elem.innerHTML = update;\n\t\t}\n  \n  \tutils.waitUntil(function() {\n      return window.utag != undefined;\n    }).then(function(){\n  \n\t\tfor (i=0;i<arr.length;i++){\n  \t\tupdate = update.replace(\"utag\",utag.data[arr[i]]);\n        if(i==arr.length-1){\n           operation();\n        }\n    }\n   });\n  });\n\n",
+    "html": "<div id=\"optimizely-extension-{{ extension.$instance }}\" class=\"utag-element-change\">\n  {{ extension.text }}\n</div>",
+    "css": ".utag-element-change {\n  background-color: #fff575;\n  border-bottom: 1px solid #e0d769;\n  color: #555;\n  padding: 10px;\n  font-weight: bold;\n  text-align: center;\n  font-size: 20px;\n}",
+    "undo_js": "var extensionElement = document.getElementById('optimizely-extension-' + extension.$instance);\nif (extensionElement) {\n  extensionElement.parentElement.removeChild(extensionElement);\n}\n"
+  }
+}
